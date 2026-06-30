@@ -1,0 +1,2 @@
+import helmet from 'helmet';import rateLimit from 'express-rate-limit';import mongoSanitize from 'express-mongo-sanitize';import cors from 'cors';import compression from 'compression';import cookieParser from 'cookie-parser';import {env} from '../config/env.js';
+export const security=[helmet({crossOriginResourcePolicy:{policy:'cross-origin'}}),cors({origin:env.clientUrl,credentials:true}),compression(),cookieParser(),mongoSanitize(),rateLimit({windowMs:15*60*1000,limit:300,standardHeaders:true,legacyHeaders:false})];
