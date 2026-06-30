@@ -23,3 +23,6 @@ All routes are versioned under `/api/v1`.
 
 ## Deployment
 Use `render.yaml` to create a backend web service and static frontend. Configure environment variables in Render and point MongoDB to Atlas. The backend health check is `/api/v1/health`.
+
+## Production feature coverage
+See `docs/FEATURE_MATRIX.md` for the implemented authentication, RBAC, publishing, AI, SEO, analytics and deployment feature map.
