@@ -1,0 +1,2 @@
+import express from 'express';import routes from './routes/index.js';import {security} from './middlewares/security.js';import {notFound,errorHandler} from './middlewares/error.js';
+const app=express();app.use(security);app.use(express.json({limit:'2mb'}));app.use(express.urlencoded({extended:true}));app.use('/api/v1',routes);app.get('/robots.txt',(req,res)=>res.type('text/plain').send('User-agent: *\nAllow: /'));app.use(notFound);app.use(errorHandler);export default app;
