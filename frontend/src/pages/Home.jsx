@@ -1,0 +1,44 @@
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { Card, EmptyState, Skeleton } from '../components/ui/Card';
+import { api } from '../services/api';
+
+export default function Home() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: () => api.get('/blogs').then((response) => response.data.data),
+  });
+
+  return (
+    <div className="space-y-8">
+      <section className="py-16">
+        <h1 className="max-w-4xl text-5xl font-black">Enterprise MERN Blog Management with Gemini AI</h1>
+        <p className="mt-4 max-w-2xl text-muted">
+          Premium dark SaaS publishing, AI writing, analytics, RBAC, SEO and recommendations.
+        </p>
+        <Link to="/editor" className="btn mt-6 inline-block">
+          Start writing
+        </Link>
+      </section>
+
+      {isLoading ? (
+        <Skeleton />
+      ) : data?.items?.length ? (
+        <div className="grid gap-4 md:grid-cols-3">
+          {data.items.map((blog) => (
+            <Card key={blog._id}>
+              <p className="text-sm text-hover">{blog.categories?.[0]?.name || 'Featured'}</p>
+              <h2 className="mt-2 text-2xl font-bold">{blog.title}</h2>
+              <p className="mt-2 text-muted">{blog.excerpt}</p>
+              <Link className="mt-4 inline-block text-hover" to={`/blog/${blog.slug}`}>
+                Read article
+              </Link>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <EmptyState title="No published blogs" text="Publish your first AI-assisted article." />
+      )}
+    </div>
+  );
+}

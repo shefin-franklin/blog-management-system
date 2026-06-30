@@ -1,0 +1,20 @@
+export default {
+  content: ['./index.html', './src/**/*.{js,jsx}'],
+  theme: {
+    extend: {
+      colors: {
+        base: '#050816',
+        secondary: '#0F172A',
+        card: '#111827',
+        accent: '#2563EB',
+        hover: '#3B82F6',
+        border: '#1E293B',
+        muted: '#94A3B8',
+      },
+      boxShadow: {
+        glow: '0 0 40px rgba(37,99,235,.25)',
+      },
+    },
+  },
+  plugins: [],
+};
