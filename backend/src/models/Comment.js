@@ -1,0 +1,19 @@
+import mongoose from 'mongoose';
+
+const commentSchema = new mongoose.Schema(
+  {
+    blog: { type: mongoose.Schema.Types.ObjectId, ref: 'Blog', index: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
+    content: { type: String, required: true },
+    status: { type: String, enum: ['pending', 'approved', 'spam', 'rejected'], default: 'pending' },
+    aiModeration: {
+      toxicity: Number,
+      spam: Number,
+      reason: String,
+    },
+  },
+  { timestamps: true },
+);
+
+export default mongoose.model('Comment', commentSchema);
