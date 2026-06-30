@@ -1,0 +1,65 @@
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
+import Table from '@tiptap/extension-table';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import TableRow from '@tiptap/extension-table-row';
+import { api } from '../../services/api';
+
+const aiActions = ['Continue writing', 'Improve writing', 'SEO optimize', 'Generate FAQs'];
+
+export default function RichEditor({ value, onChange }) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Image,
+      Link.configure({ openOnClick: false }),
+      Placeholder.configure({ placeholder: 'Write, type / for commands, or use AI tools…' }),
+      Table.configure({ resizable: true }),
+      TableRow,
+      TableHeader,
+      TableCell,
+    ],
+    content: value,
+    onUpdate: ({ editor: activeEditor }) => onChange(activeEditor.getHTML()),
+    editorProps: {
+      attributes: {
+        class: 'prose prose-invert max-w-none min-h-80 rounded-2xl border border-border bg-secondary p-5 outline-none',
+      },
+    },
+  });
+
+  const runAi = async (feature) => {
+    const { data } = await api.post('/ai/generate', { feature, prompt: editor.getText() });
+    editor.commands.insertContent(`<p>${data.data.result}</p>`);
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {aiActions.map((action) => (
+          <button className="btn" type="button" onClick={() => runAi(action)} key={action}>
+            {action}
+          </button>
+        ))}
+        <button className="rounded-xl border border-border px-3" type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+          H2
+        </button>
+        <button className="rounded-xl border border-border px-3" type="button" onClick={() => editor.chain().focus().toggleBulletList().run()}>
+          List
+        </button>
+        <button
+          className="rounded-xl border border-border px-3"
+          type="button"
+          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}
+        >
+          Table
+        </button>
+      </div>
+      <EditorContent editor={editor} />
+    </div>
+  );
+}

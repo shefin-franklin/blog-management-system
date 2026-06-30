@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: #050816;
+  color: #f8fafc;
+}
+
+.glass {
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.84), rgba(15, 23, 42, 0.62));
+  border: 1px solid #1e293b;
+  backdrop-filter: blur(18px);
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.9rem;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  padding: 0.8rem;
+  color: #f8fafc;
+}
+
+.btn {
+  border-radius: 0.9rem;
+  background: #2563eb;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+}
+
+.skeleton {
+  animation: pulse 1.5s infinite;
+  background: #1e293b;
+  border-radius: 1rem;
+}

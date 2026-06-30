@@ -1,0 +1,48 @@
+import { v2 as cloudinary } from 'cloudinary';
+import multer from 'multer';
+import { env } from '../config/env.js';
+import { Media } from '../models/misc.js';
+import { send } from '../utils/api.js';
+
+export const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+cloudinary.config({
+  cloud_name: env.cloudinary.cloudName,
+  api_key: env.cloudinary.apiKey,
+  api_secret: env.cloudinary.apiSecret,
+});
+
+export async function uploadImage(req, res) {
+  let url;
+  let publicId;
+
+  if (env.cloudinary.cloudName) {
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream({ folder: 'blog-platform' }, (error, response) => {
+        if (error) reject(error);
+        else resolve(response);
+      });
+
+      stream.end(req.file.buffer);
+    });
+
+    url = result.secure_url;
+    publicId = result.public_id;
+  } else {
+    url = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    publicId = `local-${Date.now()}`;
+  }
+
+  const media = await Media.create({
+    url,
+    publicId,
+    type: req.file.mimetype,
+    size: req.file.size,
+    uploadedBy: req.user._id,
+  });
+
+  send(res, { media }, 201);
+}

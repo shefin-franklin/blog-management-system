@@ -1,0 +1,13 @@
+import mongoose from 'mongoose';
+
+const tagSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    usageCount: { type: Number, default: 0 },
+    isTrending: { type: Boolean, default: false },
+  },
+  { timestamps: true },
+);
+
+export default mongoose.model('Tag', tagSchema);

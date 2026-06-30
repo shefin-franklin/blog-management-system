@@ -1,0 +1,34 @@
+import jwt from 'jsonwebtoken';
+import { env } from '../config/env.js';
+import User from '../models/User.js';
+import { ApiError } from '../utils/api.js';
+
+export async function protect(req, res, next) {
+  try {
+    const token = req.cookies.accessToken || (req.headers.authorization || '').replace('Bearer ', '');
+
+    if (!token) throw new ApiError(401, 'Authentication required');
+
+    const decoded = jwt.verify(token, env.jwtSecret);
+    const user = await User.findById(decoded.id).select('-password');
+
+    if (!user || user.status === 'blocked') throw new ApiError(401, 'Invalid session');
+
+    req.user = user;
+    next();
+  } catch (error) {
+    next(error.status ? error : new ApiError(401, 'Invalid or expired token'));
+  }
+}
+
+export const authorize =
+  (...roles) =>
+  (req, res, next) =>
+    roles.includes(req.user?.role) ? next() : next(new ApiError(403, 'Insufficient permissions'));
+
+export const canOwn =
+  (param = 'id') =>
+  (req, res, next) =>
+    ['super_admin', 'admin'].includes(req.user.role) || String(req.user._id) === String(req.params[param])
+      ? next()
+      : next(new ApiError(403, 'Resource ownership required'));
